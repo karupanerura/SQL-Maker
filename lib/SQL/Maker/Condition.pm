@@ -25,7 +25,7 @@ sub new {
 sub _make_term {
     my ($self, $col, $val) = @_;
 
-    if (Scalar::Util::blessed($val)) {
+    if ( Scalar::Util::blessed($val) && $val->can('as_sql') && $val->can('bind') ) {
         return ($val->as_sql($col, sub { $self->_quote(@_) }), [ $val->bind() ]);
     }
 

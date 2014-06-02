@@ -38,7 +38,7 @@ sub insert_multi {
     for my $value ( @values ) {
         my @value_stmt;
         for my $val (@$value) {
-            if (Scalar::Util::blessed($val)) {
+            if ( Scalar::Util::blessed($val) && $val->can('as_sql') && $val->can('bind') ) {
                 push @value_stmt, $val->as_sql(undef, sub { $self->_quote($_[0]) });
                 push @bind, $val->bind();
             } else {

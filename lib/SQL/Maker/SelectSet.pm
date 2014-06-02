@@ -49,7 +49,7 @@ sub new {
 sub add_statement {
     my ($self, $statement) = @_;
 
-    unless ( Scalar::Util::blessed($statement) and $statement->can('as_sql') ) {
+    unless ( Scalar::Util::blessed($statement) and $statement->can('as_sql') and $statement->can('bind') ) {
         Carp::croak( "'$statement' doesn't have 'as_sql' method.");
     }
     push @{$self->{statements}}, $statement;

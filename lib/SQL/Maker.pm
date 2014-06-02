@@ -87,7 +87,7 @@ sub insert {
     @values = ref $values eq 'HASH' ? %$values : @$values;
     while (my ($col, $val) = splice(@values, 0, 2)) {
         push @quoted_columns, $self->_quote($col);
-        if (Scalar::Util::blessed($val)) {
+        if ( Scalar::Util::blessed($val) && $val->can('as_sql') && $val->can('bind') ) {
             push @columns, $val->as_sql(undef, sub { $self->_quote($_[0]) });
             push @bind_columns, $val->bind();
         } else {
@@ -169,7 +169,7 @@ sub make_set_clause {
     my @args = ref $args eq 'HASH' ? %$args : @$args;
     while (my ($col, $val) = splice @args, 0, 2) {
         my $quoted_col = $self->_quote($col);
-        if (Scalar::Util::blessed($val)) {
+        if ( Scalar::Util::blessed($val) && $val->can('as_sql') && $val->can('bind') ) {
             push @columns, "$quoted_col = " . $val->as_sql(undef, sub { $self->_quote($_[0]) });
             push @bind_columns, $val->bind();
         } else {
@@ -205,7 +205,7 @@ sub _make_where_condition {
     my ($self, $where) = @_;
 
     return $self->new_condition unless $where;
-    if ( Scalar::Util::blessed( $where ) and $where->can('as_sql') ) {
+    if ( Scalar::Util::blessed( $where ) and $where->can('as_sql') and $where->can('bind') ) {
         return $where;
     }
 

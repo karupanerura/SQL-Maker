@@ -83,7 +83,7 @@ sub add_select {
 
 sub add_from {
     my ($self, $table, $alias) = @_;
-    if ( Scalar::Util::blessed( $table ) and $table->can('as_sql') ) {
+    if ( Scalar::Util::blessed( $table ) and $table->can('as_sql') and $table->can('bind') ) {
         push @{ $self->{subqueries} }, $table->bind;
         push @{$self->{from}}, [ \do{ '(' . $table->as_sql . ')' }, $alias ];
     }
@@ -97,7 +97,7 @@ sub add_join {
     my ($self, $table_ref, $joins) = @_;
     my ($table, $alias) = ref($table_ref) eq 'ARRAY' ? @$table_ref : ($table_ref);
 
-    if ( Scalar::Util::blessed( $table ) and $table->can('as_sql') ) {
+    if ( Scalar::Util::blessed( $table ) and $table->can('as_sql') and $table->can('bind') ) {
         push @{ $self->{subqueries} }, $table->bind;
         $table = \do{ '(' . $table->as_sql . ')' };
     }
